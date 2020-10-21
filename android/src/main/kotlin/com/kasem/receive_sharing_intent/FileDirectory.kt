@@ -91,43 +91,43 @@ object FileDirectory {
     private fun getDataColumn(context: Context, uri: Uri, selection: String?,
                               selectionArgs: Array<String>?): String? {
 
-        if (uri.authority != null) {
-            var cursor: Cursor? = null
-            val column = "_display_name"
-            val projection = arrayOf(column)
-            var targetFile: File? = null
-            try {
-                cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
-                if (cursor != null && cursor.moveToFirst()) {
-                    val columnIndex = cursor.getColumnIndexOrThrow(column)
-                    val fileName = cursor.getString(columnIndex)
-                    Log.i("FileDirectory", "File name: $fileName")
-                    targetFile = File(context.cacheDir, fileName)
-                }
-            } finally {
-                cursor?.close()
-            }
-
-            if (targetFile == null) {
-                val mimeType = context.contentResolver.getType(uri)
-                val prefix = with(mimeType ?: "") {
-                    when {
-                        startsWith("image") -> "IMG"
-                        startsWith("video") -> "VID"
-                        else -> "FILE"
-                    }
-                }
-                val type = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-                targetFile = File(context.cacheDir, "${prefix}_${Date().time}.$type")
-            }
-
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                FileOutputStream(targetFile).use { fileOut ->
-                    input.copyTo(fileOut)
-                }
-            }
-            return targetFile.path
-        }
+//        if (uri.authority != null) {
+//            var cursor: Cursor? = null
+//            val column = "_display_name"
+//            val projection = arrayOf(column)
+//            var targetFile: File? = null
+//            try {
+//                cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+//                if (cursor != null && cursor.moveToFirst()) {
+//                    val columnIndex = cursor.getColumnIndexOrThrow(column)
+//                    val fileName = cursor.getString(columnIndex)
+//                    Log.i("FileDirectory", "File name: $fileName")
+//                    targetFile = File(context.cacheDir, fileName)
+//                }
+//            } finally {
+//                cursor?.close()
+//            }
+//
+//            if (targetFile == null) {
+//                val mimeType = context.contentResolver.getType(uri)
+//                val prefix = with(mimeType ?: "") {
+//                    when {
+//                        startsWith("image") -> "IMG"
+//                        startsWith("video") -> "VID"
+//                        else -> "FILE"
+//                    }
+//                }
+//                val type = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+//                targetFile = File(context.cacheDir, "${prefix}_${Date().time}.$type")
+//            }
+//
+//            context.contentResolver.openInputStream(uri)?.use { input ->
+//                FileOutputStream(targetFile).use { fileOut ->
+//                    input.copyTo(fileOut)
+//                }
+//            }
+//            return targetFile.path
+//        }
 
         var cursor: Cursor? = null
         val column = "_data"
