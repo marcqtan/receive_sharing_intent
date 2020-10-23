@@ -106,7 +106,7 @@ class ReceiveSharingIntentPlugin(val registrar: Registrar) :
     private fun handleIntent(context: Context, intent: Intent, initial: Boolean) {
         when {
             (intent.type?.startsWith("text") != true)
-                    && (intent.action == Intent.ACTION_SEND
+                    && (intent.action == Intent.ACTION_VIEW
                     || intent.action == Intent.ACTION_SEND_MULTIPLE) -> { // Sharing images or videos
 
                 val value = getMediaUris(context, intent)
@@ -134,8 +134,8 @@ class ReceiveSharingIntentPlugin(val registrar: Registrar) :
         if (intent == null) return null
 
         return when {
-            intent.action == Intent.ACTION_SEND -> {
-                val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            intent.action == Intent.ACTION_VIEW -> {
+                val uri = intent.data
                 val path = FileDirectory.getAbsolutePath(context, uri)
                 if (path != null) {
                     val type = getMediaType(path)
