@@ -47,7 +47,18 @@ object FileDirectory {
                 // TODO handle non-primary volumes
             } else if (isDownloadsDocument(uri)) {
 
-                val id = DocumentsContract.getDocumentId(uri)
+                val fileName = getFilePath(context, uri)
+                if (fileName != null) {
+                    return Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName
+                }
+
+                var id = DocumentsContract.getDocumentId(uri)
+                if (id.startsWith("raw:")) {
+                    id = id.replaceFirst("raw:", "")
+                    val file = File(id)
+                    if (file.exists()) return id
+                }
+
                 val contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
 
@@ -138,6 +149,24 @@ object FileDirectory {
             if (cursor != null && cursor.moveToFirst()) {
                 val columnIndex = cursor.getColumnIndexOrThrow(column)
                 return cursor.getString(columnIndex)
+            }
+        } finally {
+            cursor?.close()
+        }
+        return null
+    }
+
+    fun getFilePath(context: Context, uri: Uri?): String? {
+        var cursor: Cursor? = null
+        val projection = arrayOf(
+                MediaStore.MediaColumns.DISPLAY_NAME
+        )
+        try {
+            cursor = context.contentResolver.query(uri, projection, null, null,
+                    null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+                return cursor.getString(index)
             }
         } finally {
             cursor?.close()
